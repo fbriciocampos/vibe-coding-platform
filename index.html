@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Meu Treino</title>
+    <style>
+        :root {
+            --primary: #2563EB;
+            --bg: #F3F4F6;
+            --card: #FFFFFF;
+            --text: #1F2937;
+            --text-light: #6B7280;
+            --border: #E5E7EB;
+            --danger: #EF4444;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            overscroll-behavior: none;
+        }
+
+        /* Ocultar elementos */
+        .hidden {
+            display: none !important;
+        }
+
+        /* Telas Principais */
+        .screen {
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        header {
+            background-color: var(--card);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        header h1 {
+            font-size: 20px;
+            flex-grow: 1;
+        }
+
+        .btn-icon {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        main {
+            padding: 16px;
+        }
+
+        /* Cartões */
+        .card {
+            background: var(--card);
+            padding: 16px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+        
+        .card-treino {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .card-exercicio {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            cursor: default;
+        }
+
+        .exercicio-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .foto-placeholder {
+            width: 60px;
+            height: 60px;
+            background-color: var(--bg);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-light);
+            font-size: 24px;
+        }
+
+        .linha-serie {
+            display: flex;
+            justify-content: space-between;
+            background: var(--bg);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        /* Botão Flutuante (FAB) */
+        .fab {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background-color: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+            border: none;
+            cursor: pointer;
+            z-index: 20;
+        }
+
+        /* Popup / Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: flex-end;
+            z-index: 100;
+        }
+
+        .modal-content {
+            background: var(--card);
+            width: 100%;
+            height: 90vh;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        label {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            color: var(--text-light);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            margin-bottom: 16px;
+            font-size: 16px;
+        }
+
+        .serie-inputs {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .btn-outline {
+            background: none;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            cursor: pointer;
+            margin-bottom: 24px;
+        }
+
+        .btn-solid {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- TELA 1: HOME -->
+    <div id="tela-home" class="screen">
+        <header>
+            <h1>Meus Treinos</h1>
+        </header>
+        <main>
+            <!-- Exemplo de Treino -->
+            <div class="card card-treino" onclick="abrirTreino('Treino A: Peito e Tríceps')">
+                <span>Treino A: Peito e Tríceps</span>
+                <span style="color: var(--text-light);">&#10095;</span>
+            </div>
+            <div class="card card-treino" onclick="abrirTreino('Treino B: Costas e Bíceps')">
+                <span>Treino B: Costas e Bíceps</span>
+                <span style="color: var(--text-light);">&#10095;</span>
+            </div>
+        </main>
+        <button class="fab" onclick="alert('Aqui você criaria um novo Treino')">+</button>
+    </div>
+
+    <!-- TELA 2: PÁGINA DO TREINO -->
+    <div id="tela-treino" class="screen hidden">
+        <header>
+            <button class="btn-icon" onclick="voltarHome()">&#8592;</button>
+            <h1 id="titulo-treino">Nome do Treino</h1>
+            <button class="btn-icon" style="font-size: 16px;">Editar</button>
+        </header>
+        <main>
+            <!-- Exemplo de Exercício no Treino -->
+            <div class="card card-exercicio">
+                <div class="exercicio-header">
+                    <div class="foto-placeholder">&#128247;</div>
+                    <span>Supino Reto</span>
+                </div>
+                <div>
+                    <div class="linha-serie"><span>Série 1</span><span>12 reps</span><span>20 kg</span></div>
+                    <div class="linha-serie" style="margin-top: 4px;"><span>Série 2</span><span>10 reps</span><span>25 kg</span></div>
+                </div>
+            </div>
+        </main>
+        <button class="fab" onclick="abrirModalExercicio()">+</button>
+    </div>
+
+    <!-- TELA 3: POPUP DE EXERCÍCIO -->
+    <div id="modal-exercicio" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Exercício</h2>
+                <button class="btn-icon" onclick="fecharModalExercicio()" style="color: var(--text);">&#10005;</button>
+            </div>
+
+            <label>Nome do Exercício</label>
+            <input type="text" placeholder="Ex: Cadeira Extensora">
+
+            <label>Foto do Aparelho</label>
+            <input type="file" accept="image/*" capture="environment">
+
+            <label>Séries</label>
+            <div id="lista-series">
+                <!-- A primeira linha já vem por padrão -->
+                <div class="serie-inputs">
+                    <input type="number" placeholder="Reps" style="margin-bottom: 0;">
+                    <input type="number" placeholder="Kg" style="margin-bottom: 0;">
+                </div>
+            </div>
+            
+            <button class="btn-outline" onclick="adicionarLinhaSerie()" style="margin-top: 12px;">+ Adicionar Série</button>
+
+            <button class="btn-solid" onclick="salvarExercicio()">Salvar Exercício</button>
+        </div>
+    </div>
+
+    <script>
+        // Lógica de Navegação
+        const telaHome = document.getElementById('tela-home');
+        const telaTreino = document.getElementById('tela-treino');
+        const modalExercicio = document.getElementById('modal-exercicio');
+        const tituloTreino = document.getElementById('titulo-treino');
+        const listaSeries = document.getElementById('lista-series');
+
+        function abrirTreino(nomeDoTreino) {
+            tituloTreino.textContent = nomeDoTreino;
+            telaHome.classList.add('hidden');
+            telaTreino.classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        function voltarHome() {
+            telaTreino.classList.add('hidden');
+            telaHome.classList.remove('hidden');
+        }
+
+        function abrirModalExercicio() {
+            modalExercicio.classList.remove('hidden');
+        }
+
+        function fecharModalExercicio() {
+            modalExercicio.classList.add('hidden');
+            // Limpa as séries extras ao fechar
+            listaSeries.innerHTML = `
+                <div class="serie-inputs">
+                    <input type="number" placeholder="Reps" style="margin-bottom: 0;">
+                    <input type="number" placeholder="Kg" style="margin-bottom: 0;">
+                </div>
+            `;
+        }
+
+        function adicionarLinhaSerie() {
+            const novaSerie = document.createElement('div');
+            novaSerie.className = 'serie-inputs';
+            novaSerie.innerHTML = `
+                <input type="number" placeholder="Reps" style="margin-bottom: 0;">
+                <input type="number" placeholder="Kg" style="margin-bottom: 0;">
+            `;
+            listaSeries.appendChild(novaSerie);
+        }
+
+        function salvarExercicio() {
+            alert('Lógica para salvar os dados será construída depois! Fechando o modal...');
+            fecharModalExercicio();
+        }
+    </script>
+</body>
+</html>
